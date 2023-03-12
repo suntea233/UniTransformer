@@ -1,6 +1,3 @@
-#1.embedding of ViT / SWIN Transformer...
-#2.embedding of RoBERTa / BERT / ALBERT...
-#3.initialize embedding
 
 import torch
 import torch.nn as nn
