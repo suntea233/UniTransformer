@@ -181,7 +181,9 @@ class UniTransformer(nn.Module):
             image_last_hidden_state = self.image_fc(image_hidden_state)
             text_last_hidden_state = self.text_fc(text_hidden_state)
 
-            multi_hidden_state = torch.cat([text_last_hidden_state,image_last_hidden_state],dim=-1)
+            multi_hidden_state = torch.cat([text_last_hidden_state,image_last_hidden_state],dim=1)
+
+            multi_hidden_state = self.encoder(multi_hidden_state)
 
             multi_last_hidden_state = self.multi_fc(multi_hidden_state)
             logits = self.logits(multi_last_hidden_state)
