@@ -16,7 +16,7 @@ def parse_args():
     parser.add_argument("--seed",type=int,default=3407)
     parser.add_argument("--first_step_lr",type=float,default=5e-5)
     parser.add_argument("--first_step_weight_decay",type=float,default=1e-2)
-    parser.add_argument("--max_len",type=int,default=60)
+    parser.add_argument("--max_len",type=int,default=197)
     parser.add_argument("--num_warmup_steps",type=int,default=10)
     parser.add_argument("--output_dir",type=str,default="output")
     parser.add_argument("--input_dim",type=int,default=768)

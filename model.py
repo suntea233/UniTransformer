@@ -184,7 +184,9 @@ class UniTransformer(nn.Module):
 
             multi_hidden_state = torch.cat([text_last_hidden_state,image_last_hidden_state],dim=1)
 
-            multi_hidden_state = self.encoder(multi_hidden_state)
+            multi_attention_mask = torch.cat([attention_mask,torch.ones_like(image)],dim=1)
+
+            multi_hidden_state = self.encoder(multi_hidden_state,attention_mask=multi_attention_mask)
 
             multi_last_hidden_state = self.multi_fc(multi_hidden_state)
             logits = self.logits(multi_last_hidden_state)
