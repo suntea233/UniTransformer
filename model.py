@@ -1,8 +1,8 @@
 
 import torch
 import torch.nn as nn
-from TorchCRF import CRF
-from torch.autograd import Variable
+from torchcrf import CRF
+
 import torch.nn.functional as F
 from transformers import RobertaModel,ViTModel
 
@@ -25,6 +25,7 @@ class MultiHeadAttention(nn.Module):
         self.linearQ = nn.Linear(self.hidden_dim,self.hidden_dim)
         self.linearK = nn.Linear(self.hidden_dim,self.hidden_dim)
         self.linearV = nn.Linear(self.hidden_dim,self.hidden_dim)
+        self.gelu = nn.GELU()
         self.relu = nn.ReLU()
         self.dropout = nn.Dropout(self.dropout_rate)
         self.LayerNormalization = nn.LayerNorm(hidden_dim)
