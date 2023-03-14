@@ -63,7 +63,7 @@ class MultiHeadAttention(nn.Module):
 
 
 class FC(nn.Module):
-    def __init__(self,input_dim,hidden_dim,output_dim,device,second_step=False):
+    def __init__(self,input_dim,hidden_dim,output_dim,device):
         super().__init__()
         self.input_dim = input_dim
         self.layer1 = nn.Linear(self.input_dim,hidden_dim)
@@ -73,14 +73,11 @@ class FC(nn.Module):
         self.LayerNormalization = nn.LayerNorm(output_dim)
         self.device = device
 
-        self.second_step = second_step
 
-        self.linear = nn.Linear(self.input_dim * 2,self.input_dim)
+
 
     def forward(self,x):
         # print(x.shape)
-        if self.second_step:
-            x = self.linear(x)
         outputs = self.layer1(x)
         outputs = self.relu(outputs)
         outputs = self.layer2(outputs)
@@ -135,7 +132,7 @@ class UniTransformer(nn.Module):
 
         self.image_fc = FC(self.input_dim,self.hidden_dim,self.output_dim,self.device)
         self.text_fc = FC(self.input_dim,self.hidden_dim,self.output_dim,self.device)
-        self.multi_fc = FC(self.input_dim,self.hidden_dim,self.output_dim,self.device,second_step=True)
+        self.multi_fc = FC(self.input_dim,self.hidden_dim,self.output_dim,self.device)
 
         self.logits = nn.Linear(self.output_dim,self.num_labels)
 
