@@ -1,7 +1,7 @@
 
 import torch
 import torch.nn as nn
-from torchcrf import CRF
+from TorchCRF import CRF
 
 import torch.nn.functional as F
 from transformers import RobertaModel,ViTModel
@@ -32,7 +32,6 @@ class MultiHeadAttention(nn.Module):
         self.Q = nn.Sequential(self.linearQ,self.relu)
         self.K = nn.Sequential(self.linearK,self.relu)
         self.V = nn.Sequential(self.linearV,self.relu)
-        self.seq_len = 197
         self.device = device
 
     def forward(self, queries, keys, values, attention_mask):
@@ -48,9 +47,9 @@ class MultiHeadAttention(nn.Module):
         # shape : (batch_size, num_head, input_seq_len, depth = d_model/num_head)
         a = torch.matmul(q_,k_.permute(0,1,3,2)) # a = q * k^T(后两个维度)
         a = a / (k_.size()[-1] ** 0.5) # shape:(batch_size,num_head,seq_len,seq_len)
-
         if attention_mask != None:
-            mask = attention_mask.unsqueeze(2).repeat(1, 1, self.seq_len).bool()
+            seq_len = attention_mask.shape[1]
+            mask = attention_mask.unsqueeze(2).repeat(1, 1, seq_len).bool()
             mask = mask.unsqueeze(1).repeat(1, self.num_head, 1, 1)
             a = torch.masked_fill(a, mask=~mask, value=1e-9)
 
@@ -131,7 +130,7 @@ class UniTransformer(nn.Module):
         self.num_layers = args.num_layers
         self.dropout_rate = args.dropout_rate
         self.num_heads = args.num_heads
-
+        self.max_len = args.max_len
         self.num_labels = args.num_labels
 
         self.image_fc = FC(self.input_dim,self.hidden_dim,self.output_dim,self.device)
@@ -184,7 +183,9 @@ class UniTransformer(nn.Module):
 
             multi_hidden_state = torch.cat([text_last_hidden_state,image_last_hidden_state],dim=1)
 
-            multi_attention_mask = torch.cat([attention_mask,torch.ones_like(image)],dim=1)
+            batch = image.shape[0]
+
+            multi_attention_mask = torch.cat([attention_mask,torch.ones(size=(batch,self.max_len),device=self.device)],dim=1)
 
             multi_hidden_state = self.encoder(multi_hidden_state,attention_mask=multi_attention_mask)
 

@@ -28,12 +28,11 @@ def parse_args():
     parser.add_argument("--dropout_rate",type=float,default=0.1)
     parser.add_argument("--text_pretrained_model",type=str,default="roberta-base")
     parser.add_argument("--image_pretrained_model",type=str,default="google/vit-base-patch16-224")
-    parser.add_argument("--path",type=str,default="C:/label_embedding/MABSA/MABSA_datasets")
+    parser.add_argument("--path",type=str,default="C:/uni_transformer/UniTransformer/MABSA_datasets")
     parser.add_argument("--max_grad_norm",type=float,default=1.0)
     parser.add_argument("--second_step_lr",type=float,default=5e-5)
     parser.add_argument("--second_step_weight_decay",type=float,default=1e-2)
     parser.add_argument("--gpu",type=str,default="0")
-
 
     args = parser.parse_args()
     return args
@@ -63,24 +62,23 @@ def train(args):
                                                 num_training_steps=total_steps)
 
 
-    # for epoch in tqdm(range(epochs)):
-    #     losses = 0
-    #     cnt = 0
-    #     for input_ids, labels, images, attention_mask in train_2015_dataloader:
-    #         cnt += 1
-    #         model.train()
-    #
-    #         input_ids, labels, images, attention_mask = input_ids.to(device), labels.to(device), images.to(device), attention_mask.to(device)
-    #         loss = model(input_ids,images,attention_mask,labels)
-    #
-    #         first_step_optimizer.zero_grad()
-    #         loss.backward()
-    #         torch.nn.utils.clip_grad_norm_(parameters=model.parameters(),max_norm=max_grad_norm)
-    #         first_step_optimizer.step()
-    #         first_step_scheduler.step()
-    #         losses += loss.item()
-    #     print("first_step_loss = {}".format(losses / cnt))
+    for epoch in tqdm(range(epochs)):
+        losses = 0
+        cnt = 0
+        for input_ids, labels, images, attention_mask in train_2015_dataloader:
+            cnt += 1
+            model.train()
 
+            input_ids, labels, images, attention_mask = input_ids.to(device), labels.to(device), images.to(device), attention_mask.to(device)
+            loss = model(input_ids,images,attention_mask,labels)
+
+            first_step_optimizer.zero_grad()
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(parameters=model.parameters(),max_norm=max_grad_norm)
+            first_step_optimizer.step()
+            first_step_scheduler.step()
+            losses += loss.item()
+        print("first_step_loss = {}".format(losses / cnt))
 
 
     model.two_stage = True
