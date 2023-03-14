@@ -33,6 +33,9 @@ def parse_args():
     parser.add_argument("--second_step_lr",type=float,default=5e-5)
     parser.add_argument("--second_step_weight_decay",type=float,default=1e-2)
     parser.add_argument("--gpu",type=str,default="0")
+    parser.add_argument("--pad_id",type=int,default=0)
+    parser.add_argument("--patch_len",type=int,default=197)
+
 
     args = parser.parse_args()
     return args

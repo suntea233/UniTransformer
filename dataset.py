@@ -14,6 +14,8 @@ class TwitterDataset(Dataset):
         self.path = args.path
         self.args = args
         self.train = train
+        self.pad_id = args.pad_id
+        self.patch_len = args.patch_len
         self.id2label = {
             "0":"NEG",
             "1":"NEU",
@@ -61,14 +63,14 @@ class TwitterDataset(Dataset):
             pre_word_idx = None
             for word_idx in word_ids:  # Set the special tokens to 5.
                 if word_idx is None:
-                    label_ids.append(0)
+                    label_ids.append(self.pad_id)
                 else:
                     if pre_word_idx != word_idx:
                         label_ids.append(v[word_idx])
                     else:
-                        label_ids.append(0)
+                        label_ids.append(self.pad_id)
                 pre_word_idx = word_idx
-            text_labels.append(label_ids)
+            text_labels.append(label_ids + [self.pad_id] * self.patch_len)
         tokenized_inputs["labels"] = torch.tensor(text_labels)
         return tokenized_inputs['input_ids'],tokenized_inputs['labels'],torch.tensor(np.array(images)),tokenized_inputs['attention_mask']
 

@@ -155,7 +155,7 @@ class UniTransformer(nn.Module):
         self.momentum = 0.999
         self.two_stage = False
 
-#when second_step, not frozen
+#when second_step, not frozen the parameters from encoder
     def forward(self,text,image,attention_mask,labels=None):
 
         image_embedding_outputs = self.image_embedding(image)
