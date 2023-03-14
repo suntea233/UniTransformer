@@ -155,6 +155,7 @@ class UniTransformer(nn.Module):
         self.momentum = 0.999
         self.two_stage = False
 
+
 #when second_step, not frozen the parameters from encoder
     def forward(self,text,image,attention_mask,labels=None):
 
@@ -190,7 +191,7 @@ class UniTransformer(nn.Module):
             logits = self.logits(multi_last_hidden_state)
 
             if labels is not None:
-                crf_mask = attention_mask.eq(1)
+                crf_mask = ~attention_mask.eq(0)
                 crf_loss = -self.crf(logits, labels, crf_mask)
                 return crf_loss
             else:

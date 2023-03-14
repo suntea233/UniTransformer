@@ -5,9 +5,9 @@ from transformers import get_linear_schedule_with_warmup
 
 from dataset import TwitterDataset
 from model import UniTransformer
-from tqdm import tqdm
 from evaluation import evaluate
 
+from tqdm import tqdm
 
 def parse_args():
     parser =argparse.ArgumentParser()
