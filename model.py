@@ -141,7 +141,7 @@ class UniTransformer(nn.Module):
 
 
         self.crf = CRF(self.num_labels, batch_first=True)
-        self.queue_size = 16
+        self.queue_size = args.queue_size
 
         self.model_pairs = [
             [self.encoder, self.momentum_encoder]
@@ -179,19 +179,18 @@ class UniTransformer(nn.Module):
             image_last_hidden_state = self.image_fc(image_hidden_state)
             text_last_hidden_state = self.text_fc(text_hidden_state)
 
+
             multi_hidden_state = torch.cat([text_last_hidden_state,image_last_hidden_state],dim=1)
-
             batch = image.shape[0]
-
             multi_attention_mask = torch.cat([attention_mask,torch.ones(size=(batch,self.max_len),device=self.device)],dim=1)
-
             multi_hidden_state = self.encoder(multi_hidden_state,attention_mask=multi_attention_mask)
-
             multi_last_hidden_state = self.multi_fc(multi_hidden_state)
             logits = self.logits(multi_last_hidden_state)
 
+            multi_crf_mask = torch.cat([attention_mask,torch.zeros(size=(batch,self.max_len),device=self.device)],dim=1)
+
             if labels is not None:
-                crf_mask = ~attention_mask.eq(0)
+                crf_mask = multi_crf_mask.eq(1)
                 crf_loss = -self.crf(logits, labels, crf_mask)
                 return crf_loss
             else:
